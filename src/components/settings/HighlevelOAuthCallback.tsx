@@ -17,6 +17,7 @@ const HighlevelOAuthCallback = () => {
         const code = urlParams.get('code');
         const locationId = urlParams.get('locationId');
         const companyId = urlParams.get('companyId');
+        const state = urlParams.get('state');
         const error = urlParams.get('error');
         const errorDescription = urlParams.get('error_description');
 
@@ -26,6 +27,17 @@ const HighlevelOAuthCallback = () => {
 
         if (!code) {
           throw new Error('No authorization code received');
+        }
+
+        // Verify state if present
+        let accessType = 'location';
+        if (state) {
+          try {
+            const stateData = JSON.parse(atob(state));
+            accessType = stateData.type;
+          } catch (e) {
+            console.warn('Failed to parse state parameter:', e);
+          }
         }
 
         // Exchange the code for access token

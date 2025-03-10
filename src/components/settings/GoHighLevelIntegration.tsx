@@ -36,33 +36,33 @@ const GoHighLevelIntegration = ({
       "locations.write",
       "calendars.readonly",
       "calendars.write",
-      "calendars/events.write",
+      "calendars.events.write",
       "contacts.write",
-      "calendars/groups.write",
+      "calendars.groups.write",
       "businesses.readonly",
       "businesses.write",
-      "calendars/events.readonly",
-      "calendars/groups.readonly",
+      "calendars.events.readonly",
+      "calendars.groups.readonly",
       "conversations.readonly",
       "campaigns.readonly",
       "conversations.write",
-      "conversations/message.readonly",
-      "conversations/message.write",
+      "conversations.message.readonly",
+      "conversations.message.write",
       "contacts.readonly",
       "forms.readonly",
       "forms.write",
       "links.readonly",
       "links.write",
-      "locations/customValues.readonly",
-      "locations/customValues.write",
-      "locations/customFields.readonly",
-      "locations/tasks.readonly",
-      "locations/customFields.write",
-      "locations/tasks.write",
-      "locations/tags.readonly",
-      "locations/templates.readonly",
+      "locations.customValues.readonly",
+      "locations.customValues.write",
+      "locations.customFields.readonly",
+      "locations.tasks.readonly",
+      "locations.customFields.write",
+      "locations.tasks.write",
+      "locations.tags.readonly",
+      "locations.templates.readonly",
       "medias.write",
-      "locations/tags.write",
+      "locations.tags.write",
       "medias.readonly",
       "opportunities.readonly",
       "opportunities.write",
@@ -76,6 +76,7 @@ const GoHighLevelIntegration = ({
     ].join(" ");
 
     const redirectUri = `${window.location.origin}/settings/crm/oauth/callback`;
+    const state = btoa(JSON.stringify({ type: accessLevel })); // Add state parameter for security
     
     // Start with marketplace OAuth endpoint for location/company selection
     const oauthUrl = `https://marketplace.leadconnectorhq.com/oauth/chooselocation?` + 
@@ -83,7 +84,7 @@ const GoHighLevelIntegration = ({
       `&client_id=${import.meta.env.VITE_GHL_CLIENT_ID}` +
       `&redirect_uri=${encodeURIComponent(redirectUri)}` +
       `&scope=${encodeURIComponent(scopes)}` +
-      `&userType=${accessLevel === "agency" ? "Company" : "Location"}` +
+      `&state=${encodeURIComponent(state)}` +
       `&loginWindowOpenMode=self`;
     
     window.location.href = oauthUrl;
