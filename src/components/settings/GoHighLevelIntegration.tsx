@@ -32,51 +32,51 @@ const GoHighLevelIntegration = ({
   const handleOAuthConnect = () => {
     // Construct OAuth URL with all required scopes
     const scopes = [
-      "locations.readonly",
-      "locations.write",
-      "calendars.readonly",
-      "calendars.write",
-      "calendars.events.write",
-      "contacts.write",
-      "calendars.groups.write",
-      "businesses.readonly",
-      "businesses.write",
-      "calendars.events.readonly",
-      "calendars.groups.readonly",
-      "conversations.readonly",
-      "campaigns.readonly",
-      "conversations.write",
-      "conversations.message.readonly",
-      "conversations.message.write",
-      "contacts.readonly",
-      "forms.readonly",
-      "forms.write",
-      "links.readonly",
-      "links.write",
-      "locations.customValues.readonly",
-      "locations.customValues.write",
-      "locations.customFields.readonly",
-      "locations.tasks.readonly",
-      "locations.customFields.write",
-      "locations.tasks.write",
-      "locations.tags.readonly",
-      "locations.templates.readonly",
-      "medias.write",
-      "locations.tags.write",
-      "medias.readonly",
-      "opportunities.readonly",
-      "opportunities.write",
-      "surveys.readonly",
-      "users.readonly",
-      "users.write",
-      "workflows.readonly",
-      "snapshots.readonly",
-      "oauth.write",
-      "oauth.readonly"
+      "locations/readonly",
+      "locations/write",
+      "calendars/readonly",
+      "calendars/write",
+      "calendars/events/write",
+      "contacts/write",
+      "calendars/groups/write",
+      "businesses/readonly",
+      "businesses/write",
+      "calendars/events/readonly",
+      "calendars/groups/readonly",
+      "conversations/readonly",
+      "campaigns/readonly",
+      "conversations/write",
+      "conversations/message/readonly",
+      "conversations/message/write",
+      "contacts/readonly",
+      "forms/readonly",
+      "forms/write",
+      "links/readonly",
+      "links/write",
+      "locations/customValues/readonly",
+      "locations/customValues/write",
+      "locations/customFields/readonly",
+      "locations/tasks/readonly",
+      "locations/customFields/write",
+      "locations/tasks/write",
+      "locations/tags/readonly",
+      "locations/templates/readonly",
+      "medias/write",
+      "locations/tags/write",
+      "medias/readonly",
+      "opportunities/readonly",
+      "opportunities/write",
+      "surveys/readonly",
+      "users/readonly",
+      "users/write",
+      "workflows/readonly",
+      "snapshots/readonly",
+      "oauth/write",
+      "oauth/readonly"
     ].join(" ");
 
     const redirectUri = `${window.location.origin}/settings/crm/oauth/callback`;
-    const state = btoa(JSON.stringify({ type: accessLevel })); // Add state parameter for security
+    const state = btoa(JSON.stringify({ type: accessLevel }));
     
     // Start with marketplace OAuth endpoint for location/company selection
     const oauthUrl = `https://marketplace.leadconnectorhq.com/oauth/chooselocation?` + 
@@ -85,7 +85,11 @@ const GoHighLevelIntegration = ({
       `&redirect_uri=${encodeURIComponent(redirectUri)}` +
       `&scope=${encodeURIComponent(scopes)}` +
       `&state=${encodeURIComponent(state)}` +
+      `&userType=${accessLevel === 'agency' ? 'Company' : 'Location'}` +
       `&loginWindowOpenMode=self`;
+
+    // For debugging
+    console.log('OAuth URL:', oauthUrl);
     
     window.location.href = oauthUrl;
   };
