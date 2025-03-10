@@ -75,7 +75,7 @@ const GoHighLevelIntegration = ({
       "oauth.readonly"
     ].join(" ");
 
-    const redirectUri = `${window.location.origin}/settings/highlevel/callback`;
+    const redirectUri = `${window.location.origin}/settings/crm/oauth/callback`;
     
     // Use the marketplace OAuth endpoint with the correct distribution type
     const oauthUrl = `https://marketplace.gohighlevel.com/oauth/chooselocation?` + 

@@ -86,7 +86,7 @@ function App() {
                 <Settings />
               </ProtectedRoute>
             } />
-            <Route path="settings/highlevel/callback" element={
+            <Route path="settings/crm/oauth/callback" element={
               <ProtectedRoute>
                 <HighlevelOAuthCallback />
               </ProtectedRoute>

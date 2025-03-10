@@ -40,7 +40,7 @@ const HighlevelOAuthCallback = () => {
             client_secret: import.meta.env.VITE_GHL_CLIENT_SECRET,
             code,
             grant_type: 'authorization_code',
-            redirect_uri: `${window.location.origin}/settings/highlevel/callback`,
+            redirect_uri: `${window.location.origin}/settings/crm/oauth/callback`,
           }),
         });
 
