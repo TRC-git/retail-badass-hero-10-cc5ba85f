@@ -30,68 +30,68 @@ const GoHighLevelIntegration = ({
   const [accessLevel, setAccessLevel] = useState<"location" | "agency">("location");
 
   const handleOAuthConnect = () => {
-    // Construct OAuth URL with all required scopes - exactly matching marketplace UI
+    // Construct OAuth URL with all required scopes - using forward slashes consistently
     const scopes = [
-      "locations.readonly",
-      "locations.write",
-      "calendars.readonly",
-      "calendars.write",
-      "calendars/events.write",
-      "contacts.write",
-      "calendars/groups.write",
-      "businesses.readonly",
-      "businesses.write",
-      "calendars/events.readonly",
-      "calendars/groups.readonly",
-      "conversations.readonly",
-      "campaigns.readonly",
-      "conversations.write",
-      "conversations/message.readonly",
-      "conversations/message.write",
-      "contacts.readonly",
-      "forms.readonly",
-      "forms.write",
-      "links.readonly",
-      "links.write",
-      "locations/customValues.readonly",
-      "locations/customValues.write",
-      "locations/customFields.readonly",
-      "locations/tasks.readonly",
-      "locations/customFields.write",
-      "locations/tasks.write",
-      "locations/tags.readonly",
-      "locations/templates.readonly",
-      "medias.write",
-      "locations/tags.write",
-      "medias.readonly",
-      "opportunities.readonly",
-      "opportunities.write",
-      "surveys.readonly",
-      "users.readonly",
-      "users.write",
-      "workflows.readonly",
-      "snapshots.readonly",
-      "oauth.write",
-      "oauth.readonly"
+      "locations/readonly",
+      "locations/write",
+      "calendars/readonly",
+      "calendars/write",
+      "calendars/events/write",
+      "contacts/write",
+      "calendars/groups/write",
+      "businesses/readonly",
+      "businesses/write",
+      "calendars/events/readonly",
+      "calendars/groups/readonly",
+      "conversations/readonly",
+      "campaigns/readonly",
+      "conversations/write",
+      "conversations/message/readonly",
+      "conversations/message/write",
+      "contacts/readonly",
+      "forms/readonly",
+      "forms/write",
+      "links/readonly",
+      "links/write",
+      "locations/customValues/readonly",
+      "locations/customValues/write",
+      "locations/customFields/readonly",
+      "locations/tasks/readonly",
+      "locations/customFields/write",
+      "locations/tasks/write",
+      "locations/tags/readonly",
+      "locations/templates/readonly",
+      "medias/write",
+      "locations/tags/write",
+      "medias/readonly",
+      "opportunities/readonly",
+      "opportunities/write",
+      "surveys/readonly",
+      "users/readonly",
+      "users/write",
+      "workflows/readonly",
+      "snapshots/readonly",
+      "oauth/write",
+      "oauth/readonly"
     ].join(" ");
 
     const redirectUri = `${window.location.origin}/settings/crm/oauth/callback`;
     const state = btoa(JSON.stringify({ type: accessLevel }));
     
-    // Start with marketplace OAuth endpoint for location/company selection
-    const oauthUrl = `https://marketplace.leadconnectorhq.com/oauth/chooselocation?` + 
-      `response_type=code` +
-      `&client_id=${import.meta.env.VITE_GHL_CLIENT_ID}` +
-      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-      `&scope=${encodeURIComponent(scopes)}` +
-      `&state=${encodeURIComponent(state)}` +
-      `&userType=${accessLevel === 'agency' ? 'Company' : 'Location'}` +
-      `&loginWindowOpenMode=self` +
-      `&approveAllLocations=true` +
-      `&installToFutureLocations=true`;
+    // Construct URL following the exact format from the documentation
+    const oauthUrl = 'https://marketplace.leadconnectorhq.com/oauth/chooselocation?' +
+      'response_type=code' +
+      '&redirect_uri=' + encodeURIComponent(redirectUri) +
+      '&client_id=' + import.meta.env.VITE_GHL_CLIENT_ID +
+      '&scope=' + scopes +  // Don't encode scopes as they should already be space-separated
+      '&state=' + encodeURIComponent(state) +
+      '&userType=' + (accessLevel === 'agency' ? 'Company' : 'Location') +
+      '&approveAllLocations=true' +
+      '&installToFutureLocations=true';
 
     // For debugging
     console.log('OAuth URL:', oauthUrl);
+    console.log('Scopes:', scopes);
     
     window.location.href = oauthUrl;
   };
