@@ -1,4 +1,3 @@
-
 import React from "react";
 import StripeIntegration from "./StripeIntegration";
 import GoHighLevelIntegration from "./GoHighLevelIntegration";
@@ -16,6 +15,12 @@ interface IntegrationSettingsProps {
   setStripeMode: (value: "live" | "test") => void;
   goHighLevelApiKey: string;
   setGoHighLevelApiKey: (value: string) => void;
+  highlevelAccessToken?: string;
+  highlevelRefreshToken?: string;
+  highlevelTokenExpiresAt?: Date;
+  highlevelLocationId?: string;
+  highlevelOAuthEnabled: boolean;
+  setHighlevelOAuthEnabled: (value: boolean) => void;
 }
 
 const IntegrationSettings = ({
@@ -31,6 +36,12 @@ const IntegrationSettings = ({
   setStripeMode,
   goHighLevelApiKey,
   setGoHighLevelApiKey,
+  highlevelAccessToken,
+  highlevelRefreshToken,
+  highlevelTokenExpiresAt,
+  highlevelLocationId,
+  highlevelOAuthEnabled,
+  setHighlevelOAuthEnabled,
 }: IntegrationSettingsProps) => {
   return (
     <>
@@ -50,6 +61,12 @@ const IntegrationSettings = ({
       <GoHighLevelIntegration 
         goHighLevelApiKey={goHighLevelApiKey}
         setGoHighLevelApiKey={setGoHighLevelApiKey}
+        highlevelAccessToken={highlevelAccessToken}
+        highlevelRefreshToken={highlevelRefreshToken}
+        highlevelTokenExpiresAt={highlevelTokenExpiresAt}
+        highlevelLocationId={highlevelLocationId}
+        highlevelOAuthEnabled={highlevelOAuthEnabled}
+        setHighlevelOAuthEnabled={setHighlevelOAuthEnabled}
       />
     </>
   );

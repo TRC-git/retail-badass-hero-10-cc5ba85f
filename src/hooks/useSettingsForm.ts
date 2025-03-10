@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useSettings } from "@/contexts/SettingsContext";
 import { defaultLightColors, defaultDarkColors } from "@/types/settings";
@@ -26,24 +25,30 @@ export const useSettingsForm = () => {
   const [stripeTestPublicKey, setStripeTestPublicKey] = useState<string>("");
   const [stripeMode, setStripeMode] = useState<"live" | "test">("test");
   
-  // GoHighLevel integration field
+  // GoHighLevel integration fields
   const [goHighLevelApiKey, setGoHighLevelApiKey] = useState<string>("");
+  const [highlevelClientId, setHighlevelClientId] = useState<string>("");
+  const [highlevelClientSecret, setHighlevelClientSecret] = useState<string>("");
+  const [highlevelAccessToken, setHighlevelAccessToken] = useState<string>("");
+  const [highlevelRefreshToken, setHighlevelRefreshToken] = useState<string>("");
+  const [highlevelTokenExpiresAt, setHighlevelTokenExpiresAt] = useState<Date | undefined>(undefined);
+  const [highlevelLocationId, setHighlevelLocationId] = useState<string>("");
+  const [highlevelOAuthEnabled, setHighlevelOAuthEnabled] = useState<boolean>(false);
   
   // Theme settings
   const [theme, setTheme] = useState<"light" | "dark">(settings.theme);
   const [lightBackground, setLightBackground] = useState<string>(settings.lightModeColors.background);
   const [lightSidebar, setLightSidebar] = useState<string>(settings.lightModeColors.sidebar);
   const [lightAccent, setLightAccent] = useState<string>(settings.lightModeColors.accent);
+  const [lightContainer, setLightContainer] = useState<string>(settings.lightModeColors.container);
+  const [lightSection, setLightSection] = useState<string>(settings.lightModeColors.section);
+  const [lightSectionSelected, setLightSectionSelected] = useState<string>(settings.lightModeColors.sectionSelected);
+  
   const [darkBackground, setDarkBackground] = useState<string>(settings.darkModeColors.background);
   const [darkSidebar, setDarkSidebar] = useState<string>(settings.darkModeColors.sidebar);
   const [darkAccent, setDarkAccent] = useState<string>(settings.darkModeColors.accent);
-  // Container color states
-  const [lightContainer, setLightContainer] = useState<string>(settings.lightModeColors.container);
   const [darkContainer, setDarkContainer] = useState<string>(settings.darkModeColors.container);
-  // Section color states
-  const [lightSection, setLightSection] = useState<string>(settings.lightModeColors.section);
   const [darkSection, setDarkSection] = useState<string>(settings.darkModeColors.section);
-  const [lightSectionSelected, setLightSectionSelected] = useState<string>(settings.lightModeColors.sectionSelected);
   const [darkSectionSelected, setDarkSectionSelected] = useState<string>(settings.darkModeColors.sectionSelected);
   
   // Update CSS variables when accent color changes
@@ -76,6 +81,15 @@ export const useSettingsForm = () => {
     if (settings.stripeTestPublicKey) setStripeTestPublicKey(settings.stripeTestPublicKey);
     if (settings.stripeMode) setStripeMode(settings.stripeMode);
     if (settings.goHighLevelApiKey) setGoHighLevelApiKey(settings.goHighLevelApiKey);
+    
+    // Load GoHighLevel OAuth settings
+    if (settings.highlevelClientId) setHighlevelClientId(settings.highlevelClientId);
+    if (settings.highlevelClientSecret) setHighlevelClientSecret(settings.highlevelClientSecret);
+    if (settings.highlevelAccessToken) setHighlevelAccessToken(settings.highlevelAccessToken);
+    if (settings.highlevelRefreshToken) setHighlevelRefreshToken(settings.highlevelRefreshToken);
+    if (settings.highlevelTokenExpiresAt) setHighlevelTokenExpiresAt(settings.highlevelTokenExpiresAt);
+    if (settings.highlevelLocationId) setHighlevelLocationId(settings.highlevelLocationId);
+    setHighlevelOAuthEnabled(settings.highlevelOAuthEnabled || false);
     
     // Theme settings
     setTheme(settings.theme);
@@ -122,6 +136,13 @@ export const useSettingsForm = () => {
     
     // GoHighLevel integration state and setters
     goHighLevelApiKey, setGoHighLevelApiKey,
+    highlevelClientId, setHighlevelClientId,
+    highlevelClientSecret, setHighlevelClientSecret,
+    highlevelAccessToken, setHighlevelAccessToken,
+    highlevelRefreshToken, setHighlevelRefreshToken,
+    highlevelTokenExpiresAt, setHighlevelTokenExpiresAt,
+    highlevelLocationId, setHighlevelLocationId,
+    highlevelOAuthEnabled, setHighlevelOAuthEnabled,
     
     // Theme settings state and setters
     theme, setTheme,

@@ -1,4 +1,3 @@
-
 import React from "react";
 import Layout from "@/components/Layout";
 import { TabsContent } from "@/components/ui/tabs";
@@ -117,6 +116,12 @@ const Settings = () => {
             setStripeMode={settingsForm.setStripeMode}
             goHighLevelApiKey={settingsForm.goHighLevelApiKey}
             setGoHighLevelApiKey={settingsForm.setGoHighLevelApiKey}
+            highlevelAccessToken={settingsForm.highlevelAccessToken}
+            highlevelRefreshToken={settingsForm.highlevelRefreshToken}
+            highlevelTokenExpiresAt={settingsForm.highlevelTokenExpiresAt}
+            highlevelLocationId={settingsForm.highlevelLocationId}
+            highlevelOAuthEnabled={settingsForm.highlevelOAuthEnabled}
+            setHighlevelOAuthEnabled={settingsForm.setHighlevelOAuthEnabled}
           />
         </TabsContent>
         

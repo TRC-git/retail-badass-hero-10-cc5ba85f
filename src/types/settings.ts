@@ -33,6 +33,16 @@ export interface POSSettings {
   stripeMode?: "live" | "test";
   // GoHighLevel Integration
   goHighLevelApiKey?: string;
+  highlevelClientId?: string;
+  highlevelClientSecret?: string;
+  highlevelAccessToken?: string;
+  highlevelRefreshToken?: string;
+  highlevelTokenExpiresAt?: Date;
+  highlevelLocationId?: string;
+  highlevelCompanyId?: string;
+  highlevelOAuthEnabled?: boolean;
+  highlevelTokenType?: string;
+  highlevelScopes?: string[];
   // Theme Settings
   theme: "light" | "dark";
   lightModeColors: ThemeColors;
@@ -89,4 +99,5 @@ export const defaultSettings: POSSettings = {
   darkModeColors: defaultDarkColors,
   tierThresholdSilver: 500,
   tierThresholdGold: 2000,
+  highlevelOAuthEnabled: false
 };

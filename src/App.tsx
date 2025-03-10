@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   Routes,
@@ -20,6 +19,7 @@ import Clients from "./pages/Clients";
 import ClientProfile from "./pages/ClientProfile";
 import Transactions from "./pages/Transactions";
 import Reports from "./pages/Reports";
+import HighlevelOAuthCallback from "@/components/settings/HighlevelOAuthCallback";
 
 // Temporary placeholder pages for components not yet implemented
 const Register = () => <div className="p-8 text-lg">Register Page</div>;
@@ -84,6 +84,11 @@ function App() {
             <Route path="settings" element={
               <ProtectedRoute>
                 <Settings />
+              </ProtectedRoute>
+            } />
+            <Route path="settings/highlevel/callback" element={
+              <ProtectedRoute>
+                <HighlevelOAuthCallback />
               </ProtectedRoute>
             } />
             <Route path="inventory" element={
