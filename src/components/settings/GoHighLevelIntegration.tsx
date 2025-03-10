@@ -77,14 +77,12 @@ const GoHighLevelIntegration = ({
 
     const redirectUri = `${window.location.origin}/settings/crm/oauth/callback`;
     
-    // Use the marketplace OAuth endpoint with the correct distribution type
+    // Use the marketplace OAuth endpoint with minimal required parameters
     const oauthUrl = `https://marketplace.leadconnectorhq.com/oauth/chooselocation?` + 
       `response_type=code` +
+      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
       `&client_id=${import.meta.env.VITE_GHL_CLIENT_ID}` +
       `&scope=${encodeURIComponent(scopes)}` +
-      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-      `&mode=select` +
-      `&distribution_type=${accessLevel === "agency" ? "agency" : "location"}` +
       `&loginWindowOpenMode=self`;
     
     window.location.href = oauthUrl;
