@@ -30,7 +30,7 @@ const GoHighLevelIntegration = ({
   const [accessLevel, setAccessLevel] = useState<"location" | "agency">("location");
 
   const handleOAuthConnect = () => {
-    // Construct OAuth URL with all required scopes - using forward slashes consistently
+    // Define scopes
     const scopes = [
       "locations/readonly",
       "locations/write",
@@ -73,7 +73,10 @@ const GoHighLevelIntegration = ({
       "snapshots/readonly",
       "oauth/write",
       "oauth/readonly"
-    ].join(" ");
+    ];
+
+    // Encode each scope individually and join with +
+    const encodedScopes = scopes.map(scope => encodeURIComponent(scope)).join('+');
 
     const redirectUri = `${window.location.origin}/settings/crm/oauth/callback`;
     const state = btoa(JSON.stringify({ type: accessLevel }));
@@ -83,7 +86,7 @@ const GoHighLevelIntegration = ({
       'response_type=code' +
       '&redirect_uri=' + encodeURIComponent(redirectUri) +
       '&client_id=' + import.meta.env.VITE_GHL_CLIENT_ID +
-      '&scope=' + scopes +  // Don't encode scopes as they should already be space-separated
+      '&scope=' + encodedScopes +
       '&state=' + encodeURIComponent(state) +
       '&userType=' + (accessLevel === 'agency' ? 'Company' : 'Location') +
       '&approveAllLocations=true' +
@@ -91,7 +94,7 @@ const GoHighLevelIntegration = ({
 
     // For debugging
     console.log('OAuth URL:', oauthUrl);
-    console.log('Scopes:', scopes);
+    console.log('Encoded Scopes:', encodedScopes);
     
     window.location.href = oauthUrl;
   };
