@@ -83,7 +83,8 @@ const GoHighLevelIntegration = ({
       `&client_id=${import.meta.env.VITE_GHL_CLIENT_ID}` +
       `&scope=${encodeURIComponent(scopes)}` +
       `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-      `&distribution_type=${accessLevel === "agency" ? "agency" : "sub_account"}`;
+      `&mode=select` +
+      `&distribution_type=${accessLevel === "agency" ? "agency" : "location"}`;
     
     window.location.href = oauthUrl;
   };
