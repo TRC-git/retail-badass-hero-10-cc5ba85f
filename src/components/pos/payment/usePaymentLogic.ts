@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { toast } from "sonner";
 import { formatCurrency } from "@/utils/formatters";
@@ -48,7 +47,6 @@ export function usePaymentLogic(onSuccess: () => void, onClose: () => void) {
     });
   };
 
-  // This function must be called with the appropriate total in the component
   let total = 0; 
   const initializePayment = (totalAmount: number) => {
     total = totalAmount;
@@ -91,7 +89,6 @@ export function usePaymentLogic(onSuccess: () => void, onClose: () => void) {
         }
       }
       
-      // Wait a bit to simulate processing
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       let successMessage = "";
@@ -110,12 +107,10 @@ export function usePaymentLogic(onSuccess: () => void, onClose: () => void) {
           successMessage = "Transaction added to customer tab";
           break;
         case "gift_card":
-          // Gift card payments are handled by the GiftCardPayment component
           setProcessing(false);
           return;
       }
 
-      // Save the transaction to Supabase
       const { error } = await saveTransactionToSupabase();
       
       if (error) {
@@ -135,19 +130,14 @@ export function usePaymentLogic(onSuccess: () => void, onClose: () => void) {
     }
   };
 
-  // New function to save transaction to Supabase
   const saveTransactionToSupabase = async () => {
-    // This function needs context from the POSPaymentModal component
-    // We'll modify it to be replaced with the actual implementation
     return { error: null };
   };
 
-  // Function to update wallet when a customer makes a tab payment
   const updateCustomerWallet = async (customerId: string, amount: number, transactionId: string) => {
     if (!customerId || !amount) return;
     
     try {
-      // First, check if the customer has a wallet
       const { data: wallet, error: walletError } = await supabase
         .from('client_wallets')
         .select('id, current_balance')
@@ -155,7 +145,6 @@ export function usePaymentLogic(onSuccess: () => void, onClose: () => void) {
         .single();
         
       if (walletError) {
-        // Create a new wallet if it doesn't exist
         const { data: newWallet, error: createError } = await supabase
           .from('client_wallets')
           .insert([{ 
@@ -167,7 +156,6 @@ export function usePaymentLogic(onSuccess: () => void, onClose: () => void) {
           
         if (createError) throw createError;
         
-        // Add transaction record
         await supabase
           .from('wallet_transactions')
           .insert([{
@@ -178,7 +166,6 @@ export function usePaymentLogic(onSuccess: () => void, onClose: () => void) {
             reference_id: transactionId
           }]);
       } else {
-        // Update existing wallet
         const newBalance = (wallet.current_balance || 0) + amount;
         
         await supabase
@@ -189,7 +176,6 @@ export function usePaymentLogic(onSuccess: () => void, onClose: () => void) {
           })
           .eq('id', wallet.id);
           
-        // Add transaction record
         await supabase
           .from('wallet_transactions')
           .insert([{

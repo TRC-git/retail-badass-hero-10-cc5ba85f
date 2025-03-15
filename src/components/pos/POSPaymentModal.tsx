@@ -90,6 +90,17 @@ export function POSPaymentModal({
         if (paymentMethod === 'tab' && customer?.id && data?.[0]?.id) {
           await updateCustomerWallet(customer.id, total, data[0].id);
         }
+        
+        // Update inventory for completed transactions (not for tabs)
+        if (paymentMethod !== 'tab') {
+          const inventoryUpdated = await updateInventory(cartItems);
+          if (!inventoryUpdated) {
+            console.error('Failed to update inventory');
+            // Continue with payment process but log the error
+          } else {
+            console.log('Inventory updated successfully');
+          }
+        }
       }
 
       // Continue with the base payment processing

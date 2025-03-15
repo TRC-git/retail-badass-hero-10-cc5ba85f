@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { CartItem } from "../types/cartTypes";
 import { Json } from "@/integrations/supabase/types";
 import { checkStockAvailability, updateInventory } from "./inventoryUtils";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
 
 // Create a transaction record
 export const createTransaction = async (

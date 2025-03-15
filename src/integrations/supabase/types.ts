@@ -288,6 +288,16 @@ export type Database = {
       settings: {
         Row: {
           created_at: string | null
+          highlevel_access_token: string | null
+          highlevel_client_id: string | null
+          highlevel_client_secret: string | null
+          highlevel_company_id: string | null
+          highlevel_location_id: string | null
+          highlevel_oauth_enabled: boolean | null
+          highlevel_refresh_token: string | null
+          highlevel_scopes: string[] | null
+          highlevel_token_expires_at: string | null
+          highlevel_token_type: string | null
           id: string
           logo_url: string | null
           store_address: string | null
@@ -310,6 +320,16 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          highlevel_access_token?: string | null
+          highlevel_client_id?: string | null
+          highlevel_client_secret?: string | null
+          highlevel_company_id?: string | null
+          highlevel_location_id?: string | null
+          highlevel_oauth_enabled?: boolean | null
+          highlevel_refresh_token?: string | null
+          highlevel_scopes?: string[] | null
+          highlevel_token_expires_at?: string | null
+          highlevel_token_type?: string | null
           id?: string
           logo_url?: string | null
           store_address?: string | null
@@ -332,6 +352,16 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          highlevel_access_token?: string | null
+          highlevel_client_id?: string | null
+          highlevel_client_secret?: string | null
+          highlevel_company_id?: string | null
+          highlevel_location_id?: string | null
+          highlevel_oauth_enabled?: boolean | null
+          highlevel_refresh_token?: string | null
+          highlevel_scopes?: string[] | null
+          highlevel_token_expires_at?: string | null
+          highlevel_token_type?: string | null
           id?: string
           logo_url?: string | null
           store_address?: string | null

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { formatTaxRulesFromSettings } from "@/utils/taxCalculator";
 import { calculateTotalTax } from "@/utils/taxCalculator";
@@ -8,25 +7,22 @@ import { CartItem, Product } from "./types/cartTypes";
 import { prepareCartItem, updateCartWithNewItem, calculateSubtotal } from "./utils/cartUtils";
 import { processTransaction as processTransactionUtil } from "./utils/transactionUtils";
 import { loadTabItems } from "./utils/transactionUtils";
+import { updateInventory } from "./utils/inventoryUtils";
 
-export { type CartItem, type Product, isValidCartItem } from "./types/cartTypes";
+export { type CartItem, type Product } from "./types/cartTypes";
 
 export const useCart = (taxRate: number) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
 
-  // Add product to cart, with or without a variant
   const addToCart = async (product: Product, variantId?: string) => {
     try {
-      // Prepare the item (with stock checks)
       const itemToAdd = await prepareCartItem(product, variantId);
       
       if (!itemToAdd) {
-        // Error message is already displayed in prepareCartItem
         return;
       }
       
-      // Update the cart
       const updatedCart = updateCartWithNewItem(cartItems, itemToAdd);
       setCartItems(updatedCart);
       
@@ -39,26 +35,21 @@ export const useCart = (taxRate: number) => {
 
   const updateItemQuantity = (index: number, newQuantity: number) => {
     if (newQuantity <= 0) {
-      // Remove the item if quantity is 0 or negative
       removeItem(index);
     } else {
-      // Check stock before updating
       const item = cartItems[index];
       
-      // For variant products
       if (item.variant_id && item.variant) {
         if (item.variant.stock_count !== null && newQuantity > item.variant.stock_count) {
           toast.error(`Only ${item.variant.stock_count} units available`);
           return;
         }
       } 
-      // For regular products
       else if (item.stock !== null && newQuantity > item.stock) {
         toast.error(`Only ${item.stock} units available`);
         return;
       }
       
-      // Update quantity
       const updatedCart = [...cartItems];
       updatedCart[index].quantity = newQuantity;
       setCartItems(updatedCart);
@@ -79,10 +70,7 @@ export const useCart = (taxRate: number) => {
     return calculateSubtotal(cartItems);
   };
 
-  // Use the dynamic tax calculator
   const getTaxAmount = () => {
-    // For now we'll just use the default tax rate since we haven't stored
-    // the tax rules in the database yet
     const taxRules = formatTaxRulesFromSettings([], taxRate);
     return calculateTotalTax(
       cartItems.map(item => ({
@@ -99,7 +87,6 @@ export const useCart = (taxRate: number) => {
     return getSubtotal() + getTaxAmount();
   };
 
-  // Process the transaction and update inventory
   const processTransaction = async (paymentDetails: any) => {
     const result = await processTransactionUtil(
       cartItems,
@@ -117,10 +104,8 @@ export const useCart = (taxRate: number) => {
     try {
       const { cartItems: tabItems, customerId } = await loadTabItems(tabId);
       
-      // Set the cart items
       setCartItems(tabItems);
       
-      // Fetch and set customer if there's a customer_id
       if (customerId) {
         const { data: customerData, error: customerError } = await supabase
           .from("customers")
