@@ -27,15 +27,17 @@ describe('updateCustomerWallet', () => {
 
   test('should create new wallet if wallet does not exist', async () => {
     // Mock wallet not found
-    (supabase.from().select().eq().single as jest.Mock).mockResolvedValue({
+    const mockSingleWalletNotFound = jest.fn().mockResolvedValue({
       data: null,
       error: { message: 'Wallet not found' }
     });
-
-    // Mock successful wallet creation
+    
     (supabase.from as jest.Mock).mockImplementation((table) => {
       if (table === 'client_wallets') {
         return {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          single: mockSingleWalletNotFound,
           insert: jest.fn().mockReturnValue({
             select: jest.fn().mockReturnValue({
               single: jest.fn().mockResolvedValue({
@@ -52,7 +54,9 @@ describe('updateCustomerWallet', () => {
         };
       }
       return {
-        from: jest.fn().mockReturnThis()
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        single: mockSingleWalletNotFound
       };
     });
 
@@ -63,15 +67,17 @@ describe('updateCustomerWallet', () => {
 
   test('should update existing wallet if wallet exists', async () => {
     // Mock wallet found
-    (supabase.from().select().eq().single as jest.Mock).mockResolvedValue({
+    const mockSingleWalletFound = jest.fn().mockResolvedValue({
       data: { id: 'existing-wallet-id', current_balance: 50 },
       error: null
     });
 
-    // Mock wallet update
     (supabase.from as jest.Mock).mockImplementation((table) => {
       if (table === 'client_wallets') {
         return {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          single: mockSingleWalletFound,
           update: jest.fn().mockReturnValue({
             eq: jest.fn().mockResolvedValue({ data: null, error: null })
           })
@@ -83,14 +89,9 @@ describe('updateCustomerWallet', () => {
         };
       }
       return {
-        select: jest.fn().mockReturnValue({
-          eq: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
-              data: { id: 'existing-wallet-id', current_balance: 50 },
-              error: null
-            })
-          })
-        })
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        single: mockSingleWalletFound
       };
     });
 
@@ -101,29 +102,26 @@ describe('updateCustomerWallet', () => {
 
   test('should handle errors during wallet update', async () => {
     // Mock wallet found but update fails
-    (supabase.from().select().eq().single as jest.Mock).mockResolvedValue({
+    const mockSingleWalletFound = jest.fn().mockResolvedValue({
       data: { id: 'existing-wallet-id', current_balance: 50 },
       error: null
     });
 
-    // Mock wallet update failure
     (supabase.from as jest.Mock).mockImplementation((table) => {
       if (table === 'client_wallets') {
         return {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          single: mockSingleWalletFound,
           update: jest.fn().mockReturnValue({
             eq: jest.fn().mockRejectedValue(new Error('Update failed'))
           })
         };
       }
       return {
-        select: jest.fn().mockReturnValue({
-          eq: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
-              data: { id: 'existing-wallet-id', current_balance: 50 },
-              error: null
-            })
-          })
-        })
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        single: mockSingleWalletFound
       };
     });
 
