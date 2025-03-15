@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Product, ProductUpdate } from "../types/productTypes";
 import { cleanProductData } from "../utils/dataCleaners";
@@ -22,7 +21,7 @@ export const updateProduct = async (id: string, updates: ProductUpdate): Promise
     if (('name' in updates && updates.name === undefined) || ('price' in updates && updates.price === undefined)) {
       const { data: currentProduct, error: fetchError } = await supabase
         .from("products")
-        .select("name, price")
+        .select("name, price, image_url")
         .eq("id", id)
         .single();
       
@@ -38,6 +37,11 @@ export const updateProduct = async (id: string, updates: ProductUpdate): Promise
       
       if ('price' in updates && updates.price === undefined) {
         productData.price = currentProduct.price;
+      }
+      
+      // Keep existing image_url if not provided in update
+      if (!updates.image_url && currentProduct.image_url) {
+        productData.image_url = currentProduct.image_url;
       }
     }
     

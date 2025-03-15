@@ -54,6 +54,7 @@ const useProductForm = ({ product, productId, onClose, onSave }: UseProductFormP
 
   useEffect(() => {
     if (product) {
+      console.log('Setting form data from product', product);
       setIsEditing(true);
       setCurrentProduct(product);
       form.reset({
@@ -75,6 +76,7 @@ const useProductForm = ({ product, productId, onClose, onSave }: UseProductFormP
         try {
           const productData = await fetchProductById(productId);
           if (productData) {
+            console.log('Fetched product details', productData);
             setCurrentProduct(productData);
             form.reset({
               name: productData.name,
@@ -115,6 +117,7 @@ const useProductForm = ({ product, productId, onClose, onSave }: UseProductFormP
   
     try {
       setIsSubmitting(true);
+      console.log('Submitting product data:', data);
     
       const productData = {
         name: data.name,
@@ -133,9 +136,11 @@ const useProductForm = ({ product, productId, onClose, onSave }: UseProductFormP
       let savedProduct: Product | null = null;
       
       if (isEditing && (productId || (product && product.id))) {
+        console.log('Updating product:', productId || product?.id);
         savedProduct = await updateProduct(productId || (product?.id as string), productData);
         setCurrentProduct(savedProduct);
       } else {
+        console.log('Creating new product');
         savedProduct = await createProduct(productData);
         setCurrentProduct(savedProduct);
         
