@@ -49,24 +49,22 @@ const ProductManagement = () => {
     console.log("Set showAddForm to true");
   }, [setSelectedProduct]);
 
-  const handleEditProduct = useCallback((product: any) => {
+  const handleEditProduct = useCallback((product) => {
     console.log("handleEditProduct called in ProductManagement for:", product.name);
     
     // Close any other open dialogs first
     setShowAddForm(false);
     setShowVariantsManager(false);
     
-    // Set the selected product first
+    // First set the selected product
     setSelectedProduct(product);
     
-    // Then open the edit form modal after a short delay to ensure state is updated
-    setTimeout(() => {
-      setShowEditForm(true);
-      console.log("Set showEditForm to true for product:", product.name);
-    }, 50);
+    // Then open the edit modal
+    setShowEditForm(true);
+    console.log("Set showEditForm to true for product:", product.name);
   }, [setSelectedProduct]);
 
-  const handleManageVariants = useCallback((product: any) => {
+  const handleManageVariants = useCallback((product) => {
     // Close other dialogs first
     setShowAddForm(false);
     setShowEditForm(false);
