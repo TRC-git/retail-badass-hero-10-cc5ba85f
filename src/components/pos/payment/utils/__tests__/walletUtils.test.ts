@@ -32,7 +32,7 @@ describe('updateCustomerWallet', () => {
       error: { message: 'Wallet not found' }
     });
     
-    (supabase.from as jest.Mock).mockImplementation((table) => {
+    (supabase.from as jest.Mock<any>).mockImplementation((table) => {
       if (table === 'client_wallets') {
         return {
           select: jest.fn().mockReturnThis(),
@@ -72,7 +72,7 @@ describe('updateCustomerWallet', () => {
       error: null
     });
 
-    (supabase.from as jest.Mock).mockImplementation((table) => {
+    (supabase.from as jest.Mock<any>).mockImplementation((table) => {
       if (table === 'client_wallets') {
         return {
           select: jest.fn().mockReturnThis(),
@@ -107,7 +107,7 @@ describe('updateCustomerWallet', () => {
       error: null
     });
 
-    (supabase.from as jest.Mock).mockImplementation((table) => {
+    (supabase.from as jest.Mock<any>).mockImplementation((table) => {
       if (table === 'client_wallets') {
         return {
           select: jest.fn().mockReturnThis(),
