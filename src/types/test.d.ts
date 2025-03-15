@@ -9,6 +9,8 @@ declare global {
   const test: typeof import('@jest/globals').test;
   const jest: typeof import('@jest/globals').jest & {
     MockedFunction: jest.MockedFunction<any>;
+    Mock: any;
+    fn: any;
   };
   const beforeEach: typeof import('@jest/globals').beforeEach;
   const afterEach: typeof import('@jest/globals').afterEach;
