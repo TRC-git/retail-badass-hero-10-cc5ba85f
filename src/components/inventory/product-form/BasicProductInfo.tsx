@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FormField,
   FormItem,
@@ -13,7 +13,7 @@ import { UseFormReturn } from 'react-hook-form';
 import { ImageIcon, UploadCloud } from 'lucide-react';
 import { ProductFormData } from './types';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
+import { uploadImage, deleteImage } from '@/api/utils/imageUpload';
 import { toast } from 'sonner';
 
 interface BasicProductInfoProps {
@@ -22,7 +22,15 @@ interface BasicProductInfoProps {
 
 const BasicProductInfo: React.FC<BasicProductInfoProps> = ({ form }) => {
   const [uploading, setUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(form.getValues('image_url') || null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  
+  // Initialize preview from form values when component mounts or form changes
+  useEffect(() => {
+    const currentImageUrl = form.getValues('image_url');
+    if (currentImageUrl) {
+      setPreviewUrl(currentImageUrl);
+    }
+  }, [form]);
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -31,31 +39,23 @@ const BasicProductInfo: React.FC<BasicProductInfoProps> = ({ form }) => {
       }
       
       const file = event.target.files[0];
-      const fileExt = file.name.split('.').pop();
-      const filePath = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-      
       setUploading(true);
       
-      // Upload the file to Supabase Storage
-      const { data, error } = await supabase.storage
-        .from('product-images')
-        .upload(filePath, file);
-        
-      if (error) {
-        toast.error('Error uploading image');
-        console.error('Error uploading image:', error);
-        return;
-      }
+      // Use the dedicated image upload utility
+      const imageUrl = await uploadImage(file);
       
-      // Get the public URL for the uploaded file
-      const { data: { publicUrl } } = supabase.storage
-        .from('product-images')
-        .getPublicUrl(filePath);
+      if (imageUrl) {
+        // If there's an existing image, delete it first
+        const currentImageUrl = form.getValues('image_url');
+        if (currentImageUrl) {
+          await deleteImage(currentImageUrl);
+        }
         
-      // Update the form with the new image URL
-      form.setValue('image_url', publicUrl);
-      setPreviewUrl(publicUrl);
-      toast.success('Image uploaded successfully');
+        // Update the form with the new image URL
+        form.setValue('image_url', imageUrl);
+        setPreviewUrl(imageUrl);
+        toast.success('Image uploaded successfully');
+      }
     } catch (error) {
       console.error('Error uploading image:', error);
       toast.error('Error uploading image');

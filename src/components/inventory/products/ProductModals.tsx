@@ -47,7 +47,13 @@ const ProductModals: React.FC<ProductModalsProps> = ({
       {/* Dialog for adding products */}
       <Dialog 
         open={showAddForm} 
-        onOpenChange={setShowAddForm}
+        onOpenChange={(open) => {
+          console.log("Add dialog onOpenChange called with:", open);
+          setShowAddForm(open);
+          if (!open) {
+            setSelectedProduct(null);
+          }
+        }}
       >
         <DialogContent className="max-w-7xl max-h-[85vh] bg-background overflow-y-auto custom-scrollbar">
           <DialogTitle>Add New Product</DialogTitle>
@@ -64,7 +70,13 @@ const ProductModals: React.FC<ProductModalsProps> = ({
       {/* Dialog for editing products */}
       <Dialog 
         open={showEditForm} 
-        onOpenChange={setShowEditForm}
+        onOpenChange={(open) => {
+          console.log("Edit dialog onOpenChange called with:", open);
+          setShowEditForm(open);
+          if (!open) {
+            setSelectedProduct(null);
+          }
+        }}
       >
         <DialogContent className="max-w-7xl max-h-[85vh] bg-background overflow-y-auto custom-scrollbar">
           <DialogTitle>Edit Product</DialogTitle>
@@ -82,7 +94,13 @@ const ProductModals: React.FC<ProductModalsProps> = ({
       {/* Dialog for managing variants */}
       <Dialog 
         open={showVariantsManager} 
-        onOpenChange={setShowVariantsManager}
+        onOpenChange={(open) => {
+          console.log("Variants dialog onOpenChange called with:", open);
+          setShowVariantsManager(open);
+          if (!open) {
+            setSelectedProduct(null);
+          }
+        }}
       >
         <DialogContent className="sm:max-w-[800px] max-h-[90vh]">
           {showVariantsManager && selectedProduct && (

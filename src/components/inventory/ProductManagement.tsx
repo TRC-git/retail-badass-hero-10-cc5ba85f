@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useProducts } from "@/contexts/ProductContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { deleteProduct } from "@/api/productApi";
@@ -22,6 +22,12 @@ const ProductManagement = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [showVariantsManager, setShowVariantsManager] = useState(false);
+
+  // Debugging for dialog visibility
+  useEffect(() => {
+    console.log("Dialog states - Add:", showAddForm, "Edit:", showEditForm, "Variants:", showVariantsManager);
+    console.log("Selected product:", selectedProduct?.name);
+  }, [showAddForm, showEditForm, showVariantsManager, selectedProduct]);
 
   // Filter products based on search term
   const filteredProducts = products.filter(product => 
@@ -46,15 +52,25 @@ const ProductManagement = () => {
   const handleEditProduct = useCallback((product: any) => {
     console.log("handleEditProduct called in ProductManagement for:", product.name);
     
-    // Set the selected product first, then show the form
+    // Close any other open dialogs first
+    setShowAddForm(false);
+    setShowVariantsManager(false);
+    
+    // Set the selected product first
     setSelectedProduct(product);
     
-    // Open the edit form modal
-    setShowEditForm(true);
-    console.log("Set showEditForm to true");
+    // Then open the edit form modal after a short delay to ensure state is updated
+    setTimeout(() => {
+      setShowEditForm(true);
+      console.log("Set showEditForm to true for product:", product.name);
+    }, 50);
   }, [setSelectedProduct]);
 
   const handleManageVariants = useCallback((product: any) => {
+    // Close other dialogs first
+    setShowAddForm(false);
+    setShowEditForm(false);
+    
     setSelectedProduct(product);
     setShowVariantsManager(true);
     return false;
@@ -74,8 +90,6 @@ const ProductManagement = () => {
       toast.error("An error occurred while deleting the product");
     }
   };
-
-  console.log("Current add form dialog state:", showAddForm);
 
   return (
     <div className="space-y-4">
