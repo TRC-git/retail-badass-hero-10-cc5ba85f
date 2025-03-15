@@ -7,6 +7,7 @@ import { PaymentActions } from "./payment/PaymentActions";
 import { usePaymentLogic } from "./payment/usePaymentLogic";
 import { supabase } from "@/integrations/supabase/client";
 import { updateInventory } from "@/hooks/pos/utils/inventoryUtils";
+import { PaymentMethod } from "./payment/types/paymentTypes";
 
 export interface POSPaymentModalProps {
   open: boolean;
@@ -124,7 +125,7 @@ export function POSPaymentModal({
           <div>
             <PaymentMethodTabs
               paymentMethod={paymentMethod}
-              setPaymentMethod={setPaymentMethod}
+              setPaymentMethod={(method: PaymentMethod) => setPaymentMethod(method)}
               amountTendered={amountTendered}
               setAmountTendered={setAmountTendered}
               total={total}

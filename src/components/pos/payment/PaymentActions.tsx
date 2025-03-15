@@ -1,34 +1,49 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { PaymentMethod } from "./types/paymentTypes";
 
 interface PaymentActionsProps {
   onCancel: () => void;
   onPayment: () => void;
   processing: boolean;
-  paymentMethod: string;
+  paymentMethod: PaymentMethod;
 }
 
-export function PaymentActions({
-  onCancel,
-  onPayment,
-  processing,
-  paymentMethod,
+export function PaymentActions({ 
+  onCancel, 
+  onPayment, 
+  processing, 
+  paymentMethod 
 }: PaymentActionsProps) {
+  const getButtonText = () => {
+    switch(paymentMethod) {
+      case "cash":
+        return "Complete Cash Payment";
+      case "card":
+        return "Process Card Payment";
+      case "check":
+        return "Accept Check";
+      case "tab":
+        return "Add to Customer Tab";
+      case "gift_card":
+        return "Apply Gift Card";
+      default:
+        return "Complete Payment";
+    }
+  };
+
   return (
-    <div className="flex flex-col-reverse sm:flex-row sm:justify-between sm:space-x-2">
-      <Button 
-        variant="outline" 
-        onClick={onCancel}
-        disabled={processing}
-      >
+    <div className="flex justify-end gap-2 w-full">
+      <Button variant="outline" onClick={onCancel} disabled={processing}>
         Cancel
       </Button>
       <Button 
-        onClick={onPayment}
-        disabled={processing || paymentMethod === "gift_card"}
+        onClick={onPayment} 
+        disabled={processing}
+        className="min-w-[180px]"
       >
-        {processing ? "Processing..." : `Complete ${paymentMethod === 'tab' ? 'Tab' : 'Payment'}`}
+        {processing ? "Processing..." : getButtonText()}
       </Button>
     </div>
   );

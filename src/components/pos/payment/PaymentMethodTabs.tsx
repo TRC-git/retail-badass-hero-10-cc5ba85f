@@ -6,10 +6,11 @@ import { CardPayment } from "../payment-methods/CardPayment";
 import { CheckPayment } from "../payment-methods/CheckPayment";
 import { TabPayment } from "../payment-methods/TabPayment";
 import { GiftCardPayment } from "../GiftCardPayment";
+import { PaymentMethod } from "./types/paymentTypes";
 
 interface PaymentMethodTabsProps {
-  paymentMethod: string;
-  setPaymentMethod: (method: string) => void;
+  paymentMethod: PaymentMethod;
+  setPaymentMethod: (method: PaymentMethod) => void;
   amountTendered: string;
   setAmountTendered: (amount: string) => void;
   total: number;
@@ -51,7 +52,12 @@ export function PaymentMethodTabs({
   onGiftCardPaymentComplete,
 }: PaymentMethodTabsProps) {
   return (
-    <Tabs defaultValue="cash" className="w-full" onValueChange={setPaymentMethod}>
+    <Tabs 
+      defaultValue="cash" 
+      className="w-full" 
+      value={paymentMethod} 
+      onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
+    >
       <TabsList className="grid w-full grid-cols-5">
         <TabsTrigger value="cash">Cash</TabsTrigger>
         <TabsTrigger value="card">Card</TabsTrigger>

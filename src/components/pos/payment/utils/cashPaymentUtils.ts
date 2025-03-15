@@ -15,9 +15,8 @@ export const handleNumpadInput = (
   }
 
   if (value === "backspace") {
-    setAmountTendered((prev) => 
-      prev.length > 1 ? prev.slice(0, -1) : "0"
-    );
+    const newValue = amountTendered.length > 1 ? amountTendered.slice(0, -1) : "0";
+    setAmountTendered(newValue);
     return;
   }
 
@@ -26,13 +25,12 @@ export const handleNumpadInput = (
     return;
   }
 
-  setAmountTendered((prev) => {
-    if (prev === "0" && value !== ".") {
-      return value;
-    }
-    if (value === "." && prev.includes(".")) {
-      return prev;
-    }
-    return prev + value;
-  });
+  if (amountTendered === "0" && value !== ".") {
+    setAmountTendered(value);
+  } else if (value === "." && amountTendered.includes(".")) {
+    // Do nothing if trying to add a second decimal point
+    return;
+  } else {
+    setAmountTendered(amountTendered + value);
+  }
 };
