@@ -1,10 +1,15 @@
+
 import { useState } from "react";
 import { toast } from "sonner";
 import { formatCurrency } from "@/utils/formatters";
-import { supabase } from "@/integrations/supabase/client";
+import { PaymentMethod, CardDetails } from "./types/paymentTypes";
+import { calculateChange, handleNumpadInput as handleNumpadInputUtil } from "./utils/cashPaymentUtils";
+import { validatePayment } from "./utils/paymentValidation";
+import { updateCustomerWallet } from "./utils/walletUtils";
 
 export function usePaymentLogic(onSuccess: () => void, onClose: () => void) {
-  const [paymentMethod, setPaymentMethod] = useState<string>("cash");
+  // Payment state
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [amountTendered, setAmountTendered] = useState<string>("0");
   const [cardNumber, setCardNumber] = useState<string>("");
   const [cardExpiryMonth, setCardExpiryMonth] = useState<string>("");
@@ -12,89 +17,55 @@ export function usePaymentLogic(onSuccess: () => void, onClose: () => void) {
   const [cardCVC, setCardCVC] = useState<string>("");
   const [checkNumber, setCheckNumber] = useState<string>("");
   const [processing, setProcessing] = useState<boolean>(false);
+  
+  // Store total amount (set via initializePayment)
+  let total = 0;
 
-  const calculateChange = (): number => {
-    const tendered = parseFloat(amountTendered) || 0;
-    return Math.max(0, tendered - (total || 0));
-  };
-
+  // Handler for numpad input
   const handleNumpadInput = (value: string) => {
-    if (value === "clear") {
-      setAmountTendered("0");
-      return;
-    }
-
-    if (value === "backspace") {
-      setAmountTendered((prev) => 
-        prev.length > 1 ? prev.slice(0, -1) : "0"
-      );
-      return;
-    }
-
-    if ([10, 20, 50, 100].includes(Number(value))) {
-      setAmountTendered(value);
-      return;
-    }
-
-    setAmountTendered((prev) => {
-      if (prev === "0" && value !== ".") {
-        return value;
-      }
-      if (value === "." && prev.includes(".")) {
-        return prev;
-      }
-      return prev + value;
-    });
+    handleNumpadInputUtil(value, amountTendered, setAmountTendered);
   };
 
-  let total = 0; 
+  // Initialize payment with total amount
   const initializePayment = (totalAmount: number) => {
     total = totalAmount;
     setAmountTendered(totalAmount.toFixed(2));
   };
 
+  // Gift card payment completion handler
   const handleGiftCardPaymentComplete = (cardCode: string) => {
     toast.success(`Payment completed using gift card: ${cardCode}`);
     onSuccess();
     onClose();
   };
 
+  // Mock function for saving transaction to Supabase
+  const saveTransactionToSupabase = async () => {
+    return { error: null };
+  };
+
+  // Process payment
   const processPayment = async () => {
     setProcessing(true);
     
     try {
-      if (paymentMethod === "cash") {
-        const tendered = parseFloat(amountTendered) || 0;
-        if (tendered < total) {
-          toast.error("Amount tendered must be equal to or greater than the total");
-          setProcessing(false);
-          return;
-        }
-      } else if (paymentMethod === "card") {
-        if (!cardNumber || !cardExpiryMonth || !cardExpiryYear || !cardCVC) {
-          toast.error("Please enter all card details");
-          setProcessing(false);
-          return;
-        }
-        if (cardNumber.length < 13 || cardNumber.length > 19) {
-          toast.error("Invalid card number");
-          setProcessing(false);
-          return;
-        }
-      } else if (paymentMethod === "check") {
-        if (!checkNumber) {
-          toast.error("Please enter a check number");
-          setProcessing(false);
-          return;
-        }
+      // Validate payment details
+      const cardDetails: CardDetails = { cardNumber, cardExpiryMonth, cardExpiryYear, cardCVC };
+      const isValid = validatePayment(paymentMethod, total, amountTendered, cardDetails, checkNumber);
+      
+      if (!isValid) {
+        setProcessing(false);
+        return;
       }
       
+      // Simulate payment processing
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Set success message based on payment method
       let successMessage = "";
       switch (paymentMethod) {
         case "cash":
-          const change = calculateChange();
+          const change = calculateChange(amountTendered, total);
           successMessage = `Payment complete. Change: ${formatCurrency(change)}`;
           break;
         case "card":
@@ -111,6 +82,7 @@ export function usePaymentLogic(onSuccess: () => void, onClose: () => void) {
           return;
       }
 
+      // Save transaction
       const { error } = await saveTransactionToSupabase();
       
       if (error) {
@@ -127,71 +99,6 @@ export function usePaymentLogic(onSuccess: () => void, onClose: () => void) {
     } finally {
       setProcessing(false);
       onClose();
-    }
-  };
-
-  const saveTransactionToSupabase = async () => {
-    return { error: null };
-  };
-
-  const updateCustomerWallet = async (customerId: string, amount: number, transactionId: string) => {
-    if (!customerId || !amount) return;
-    
-    try {
-      const { data: wallet, error: walletError } = await supabase
-        .from('client_wallets')
-        .select('id, current_balance')
-        .eq('customer_id', customerId)
-        .single();
-        
-      if (walletError) {
-        const { data: newWallet, error: createError } = await supabase
-          .from('client_wallets')
-          .insert([{ 
-            customer_id: customerId, 
-            current_balance: amount 
-          }])
-          .select()
-          .single();
-          
-        if (createError) throw createError;
-        
-        await supabase
-          .from('wallet_transactions')
-          .insert([{
-            wallet_id: newWallet.id,
-            amount: amount,
-            type: 'charge',
-            description: 'Added to tab during checkout',
-            reference_id: transactionId
-          }]);
-      } else {
-        const newBalance = (wallet.current_balance || 0) + amount;
-        
-        await supabase
-          .from('client_wallets')
-          .update({ 
-            current_balance: newBalance,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', wallet.id);
-          
-        await supabase
-          .from('wallet_transactions')
-          .insert([{
-            wallet_id: wallet.id,
-            amount: amount,
-            type: 'charge',
-            description: 'Added to tab during checkout',
-            reference_id: transactionId
-          }]);
-      }
-      
-      console.log('Customer wallet updated successfully');
-      return { success: true };
-    } catch (error) {
-      console.error('Error updating customer wallet:', error);
-      return { success: false, error };
     }
   };
 
@@ -212,7 +119,7 @@ export function usePaymentLogic(onSuccess: () => void, onClose: () => void) {
     setCheckNumber,
     processing,
     setProcessing,
-    calculateChange,
+    calculateChange: () => calculateChange(amountTendered, total),
     handleNumpadInput,
     handleGiftCardPaymentComplete,
     processPayment,
