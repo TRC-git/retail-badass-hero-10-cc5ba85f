@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { CartItem } from "../types/cartTypes";
 import { Json } from "@/integrations/supabase/types";
@@ -60,8 +59,7 @@ export const processTransaction = async (
     const stockAvailable = await checkStockAvailability(cartItems);
     if (!stockAvailable) {
       toast("Some items in your cart are out of stock", {
-        description: "Please adjust your order",
-        variant: "destructive"
+        description: "Please adjust your order"
       });
       return false;
     }
@@ -78,8 +76,7 @@ export const processTransaction = async (
     
     if (!transaction) {
       toast("Failed to create transaction", {
-        description: "There was a problem processing your order",
-        variant: "destructive"
+        description: "There was a problem processing your order"
       });
       return false;
     }
@@ -88,21 +85,19 @@ export const processTransaction = async (
     const inventoryUpdated = await updateInventory(cartItems);
     if (!inventoryUpdated) {
       toast("Failed to update inventory", {
-        description: "Your order was processed but inventory wasn't updated",
-        variant: "destructive"
+        description: "Your order was processed but inventory wasn't updated"
       });
       return false;
     }
     
     toast("Transaction completed successfully", {
-      description: "Your purchase has been processed",
+      description: "Your purchase has been processed"
     });
     return true;
   } catch (error) {
     console.error('Error processing transaction:', error);
     toast("Failed to process transaction", {
-      description: "There was an unexpected error",
-      variant: "destructive"
+      description: "There was an unexpected error"
     });
     return false;
   }

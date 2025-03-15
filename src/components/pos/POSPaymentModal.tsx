@@ -61,7 +61,7 @@ export function POSPaymentModal({
     if (open) {
       initializePayment(total);
     }
-  }, [open, total]);
+  }, [open, total, initializePayment]);
 
   // Enhanced payment processing with Supabase integration
   const processPayment = async () => {
