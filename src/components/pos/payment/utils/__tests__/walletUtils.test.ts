@@ -1,6 +1,7 @@
 
 import { updateCustomerWallet } from '../walletUtils';
 import { supabase } from '@/integrations/supabase/client';
+import '@testing-library/jest-dom';
 
 // Mock Supabase client
 jest.mock('@/integrations/supabase/client', () => ({
@@ -32,16 +33,6 @@ describe('updateCustomerWallet', () => {
     });
 
     // Mock successful wallet creation
-    (supabase.from().insert as jest.Mock).mockReturnValue({
-      select: jest.fn().mockReturnValue({
-        single: jest.fn().mockResolvedValue({
-          data: { id: 'new-wallet-id', current_balance: 100 },
-          error: null
-        })
-      })
-    });
-
-    // Mock transaction creation
     (supabase.from as jest.Mock).mockImplementation((table) => {
       if (table === 'client_wallets') {
         return {

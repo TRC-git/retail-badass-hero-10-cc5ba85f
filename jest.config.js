@@ -11,4 +11,10 @@ module.exports = {
     }],
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  testMatch: ['**/__tests__/**/*.test.ts?(x)'],
+  globals: {
+    'ts-jest': {
+      isolatedModules: true,
+    },
+  },
 };

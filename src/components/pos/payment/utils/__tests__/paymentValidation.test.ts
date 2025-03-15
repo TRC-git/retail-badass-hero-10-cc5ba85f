@@ -1,6 +1,7 @@
 
 import { validatePayment } from '../paymentValidation';
 import { toast } from 'sonner';
+import '@testing-library/jest-dom';
 
 // Mock the toast library
 jest.mock('sonner', () => ({

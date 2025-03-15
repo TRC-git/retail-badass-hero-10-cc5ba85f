@@ -1,5 +1,6 @@
 
 import { calculateChange, handleNumpadInput } from '../cashPaymentUtils';
+import '@testing-library/jest-dom';
 
 describe('calculateChange', () => {
   test('should return correct change when amount tendered is greater than total', () => {
