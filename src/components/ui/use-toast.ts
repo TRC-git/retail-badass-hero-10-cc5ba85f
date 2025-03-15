@@ -1,4 +1,8 @@
 
-import { useToast, toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
-export { useToast, toast };
+export { toast };
+
+// Re-export the useToast hook from src/hooks/use-toast for backward compatibility
+export { useToast } from "@/hooks/use-toast";
+

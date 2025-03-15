@@ -6,6 +6,7 @@ import { PaymentMethodTabs } from "./payment/PaymentMethodTabs";
 import { PaymentActions } from "./payment/PaymentActions";
 import { usePaymentLogic } from "./payment/usePaymentLogic";
 import { supabase } from "@/integrations/supabase/client";
+import { updateInventory } from "@/hooks/pos/utils/inventoryUtils";
 
 export interface POSPaymentModalProps {
   open: boolean;

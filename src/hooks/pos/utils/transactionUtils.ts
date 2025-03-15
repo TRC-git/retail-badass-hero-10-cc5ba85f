@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { CartItem } from "../types/cartTypes";
 import { Json } from "@/integrations/supabase/types";
 import { checkStockAvailability, updateInventory } from "./inventoryUtils";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 // Create a transaction record
 export const createTransaction = async (
@@ -59,7 +59,10 @@ export const processTransaction = async (
     // First, check stock availability for all items
     const stockAvailable = await checkStockAvailability(cartItems);
     if (!stockAvailable) {
-      toast.error('Some items in your cart are out of stock');
+      toast("Some items in your cart are out of stock", {
+        description: "Please adjust your order",
+        variant: "destructive"
+      });
       return false;
     }
     
@@ -74,22 +77,33 @@ export const processTransaction = async (
     );
     
     if (!transaction) {
-      toast.error('Failed to create transaction');
+      toast("Failed to create transaction", {
+        description: "There was a problem processing your order",
+        variant: "destructive"
+      });
       return false;
     }
     
     // Update inventory
     const inventoryUpdated = await updateInventory(cartItems);
     if (!inventoryUpdated) {
-      toast.error('Failed to update inventory');
+      toast("Failed to update inventory", {
+        description: "Your order was processed but inventory wasn't updated",
+        variant: "destructive"
+      });
       return false;
     }
     
-    toast.success('Transaction completed successfully');
+    toast("Transaction completed successfully", {
+      description: "Your purchase has been processed",
+    });
     return true;
   } catch (error) {
     console.error('Error processing transaction:', error);
-    toast.error('Failed to process transaction');
+    toast("Failed to process transaction", {
+      description: "There was an unexpected error",
+      variant: "destructive"
+    });
     return false;
   }
 };
