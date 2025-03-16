@@ -30,7 +30,7 @@ export const useTransactionStats = (dateRange?: DateRange, periodType: PeriodTyp
       if (error) throw error;
 
       const totalSales = transactions.reduce((sum, tx) => 
-        tx.status === 'completed' ? sum + (tx.total || 0) : sum, 0);
+        tx.status === 'completed' ? sum + (Number(tx.total) || 0) : sum, 0);
       
       const completedCount = transactions.filter(tx => tx.status === 'completed').length;
       const openTabsCount = transactions.filter(tx => tx.status === 'open').length;
@@ -60,7 +60,7 @@ export const useTransactionStats = (dateRange?: DateRange, periodType: PeriodTyp
         new Date(tx.created_at) >= today && 
         tx.status === 'completed'
       );
-      const todaySales = todayTransactions.reduce((sum, tx) => sum + (tx.total || 0), 0);
+      const todaySales = todayTransactions.reduce((sum, tx) => sum + (Number(tx.total) || 0), 0);
       
       // Get dates for comparison based on period type
       let currentPeriodStart: Date;
@@ -114,7 +114,7 @@ export const useTransactionStats = (dateRange?: DateRange, periodType: PeriodTyp
         tx.status === 'completed'
       );
       
-      const currentPeriodSales = currentPeriodTransactions.reduce((sum, tx) => sum + (tx.total || 0), 0);
+      const currentPeriodSales = currentPeriodTransactions.reduce((sum, tx) => sum + (Number(tx.total) || 0), 0);
       
       // Calculate previous period transactions
       const previousPeriodTransactions = transactions.filter(tx => 
@@ -123,7 +123,7 @@ export const useTransactionStats = (dateRange?: DateRange, periodType: PeriodTyp
         tx.status === 'completed'
       );
       
-      const previousPeriodSales = previousPeriodTransactions.reduce((sum, tx) => sum + (tx.total || 0), 0);
+      const previousPeriodSales = previousPeriodTransactions.reduce((sum, tx) => sum + (Number(tx.total) || 0), 0);
       
       // Calculate trend percentage - Fix type issue with explicit number casting
       const salesTrend = previousPeriodSales > 0 
