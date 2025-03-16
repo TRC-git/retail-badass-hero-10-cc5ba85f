@@ -1,6 +1,6 @@
 
-import React from "react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import React, { useEffect } from "react";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Product } from "@/types";
 import ProductForm from "../ProductForm";
 import { ProductVariantsManager } from "../ProductVariantsManager";
@@ -28,6 +28,16 @@ const ProductModals: React.FC<ProductModalsProps> = ({
   setSelectedProduct,
   refreshProducts
 }) => {
+  // Debug log when props change to help diagnose issues
+  useEffect(() => {
+    console.log("ProductModals received props:", {
+      showAddForm,
+      showEditForm,
+      showVariantsManager,
+      selectedProduct: selectedProduct?.name
+    });
+  }, [showAddForm, showEditForm, showVariantsManager, selectedProduct]);
+
   const handleFormClose = () => {
     console.log("Closing form dialog");
     setShowAddForm(false);
@@ -57,6 +67,9 @@ const ProductModals: React.FC<ProductModalsProps> = ({
       >
         <DialogContent className="max-w-7xl max-h-[85vh] bg-background overflow-y-auto custom-scrollbar">
           <DialogTitle>Add New Product</DialogTitle>
+          <DialogDescription>
+            Fill out the form below to add a new product to your inventory.
+          </DialogDescription>
           {showAddForm && (
             <ProductForm 
               onClose={handleFormClose} 
@@ -80,6 +93,9 @@ const ProductModals: React.FC<ProductModalsProps> = ({
       >
         <DialogContent className="max-w-7xl max-h-[85vh] bg-background overflow-y-auto custom-scrollbar">
           <DialogTitle>Edit Product</DialogTitle>
+          <DialogDescription>
+            Update product information below.
+          </DialogDescription>
           {showEditForm && selectedProduct && (
             <ProductForm 
               product={selectedProduct} 
@@ -103,6 +119,10 @@ const ProductModals: React.FC<ProductModalsProps> = ({
         }}
       >
         <DialogContent className="sm:max-w-[800px] max-h-[90vh]">
+          <DialogTitle>Manage Product Variants</DialogTitle>
+          <DialogDescription>
+            Create and manage variants for this product.
+          </DialogDescription>
           {showVariantsManager && selectedProduct && (
             <ProductVariantsManager 
               product={selectedProduct} 

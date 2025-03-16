@@ -72,7 +72,9 @@ const ProductTable = ({
                     size="sm"
                     onClick={(e) => {
                       e.preventDefault();
+                      e.stopPropagation();
                       handleManageVariants(product);
+                      return false;
                     }}
                     className="flex items-center gap-1"
                     type="button"
@@ -93,6 +95,7 @@ const ProductTable = ({
                       e.preventDefault();
                       e.stopPropagation();
                       handleEditProduct(product);
+                      return false;
                     }}
                     title="Edit product"
                     aria-label="Edit product"

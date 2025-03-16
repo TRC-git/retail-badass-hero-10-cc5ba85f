@@ -56,12 +56,14 @@ const ProductManagement = () => {
     setShowAddForm(false);
     setShowVariantsManager(false);
     
-    // First set the selected product
+    // First set the selected product, then show the dialog
     setSelectedProduct(product);
     
-    // Then open the edit modal
-    setShowEditForm(true);
-    console.log("Set showEditForm to true for product:", product.name);
+    // Important: Use setTimeout to ensure the selectedProduct is set before opening the dialog
+    setTimeout(() => {
+      setShowEditForm(true);
+      console.log("Set showEditForm to true for product:", product.name);
+    }, 50);
   }, [setSelectedProduct]);
 
   const handleManageVariants = useCallback((product) => {
