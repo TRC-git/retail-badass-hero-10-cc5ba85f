@@ -48,7 +48,7 @@ export const useTransactionStats = (dateRange?: DateRange, periodType: PeriodTyp
         .map(([method]) => method)[0] || 'None';
       
       const avgTransactionValue = completedCount > 0 
-        ? totalSales / completedCount 
+        ? Number(totalSales) / completedCount 
         : 0;
       
       // Today's date at midnight
