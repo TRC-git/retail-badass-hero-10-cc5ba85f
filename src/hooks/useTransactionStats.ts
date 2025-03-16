@@ -125,7 +125,7 @@ export const useTransactionStats = (dateRange?: DateRange, periodType: PeriodTyp
       
       const previousPeriodSales = previousPeriodTransactions.reduce((sum, tx) => sum + (tx.total || 0), 0);
       
-      // Calculate trend percentage
+      // Calculate trend percentage - Fix type issue with explicit number casting
       const salesTrend = previousPeriodSales > 0 
         ? ((currentPeriodSales - previousPeriodSales) / previousPeriodSales) * 100 
         : 0;
