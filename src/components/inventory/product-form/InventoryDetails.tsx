@@ -87,7 +87,7 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ form, categories })
                 const selectedCategory = categories.find(cat => cat.id === value);
                 form.setValue('category', selectedCategory ? selectedCategory.name : '');
               }}
-              value={field.value}
+              value={field.value || undefined}
             >
               <FormControl>
                 <SelectTrigger>
@@ -95,7 +95,7 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ form, categories })
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="">None</SelectItem>
+                <SelectItem value="none">None</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.name}
