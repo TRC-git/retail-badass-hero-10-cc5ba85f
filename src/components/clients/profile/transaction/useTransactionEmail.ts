@@ -64,7 +64,7 @@ export const useTransactionEmail = () => {
       
       pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
       // Fix: Ensure we're getting a string, not a number array
-      const pdfBase64 = pdf.output('datauristring').toString().split(',')[1];
+      const pdfBase64 = pdf.output('datauristring').split(',')[1];
 
       await sendInvoice(pdfBase64, 'Store Name');
     } catch (error) {
