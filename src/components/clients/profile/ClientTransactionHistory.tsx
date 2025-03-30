@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Transaction } from "@/types/transaction";
 
@@ -46,11 +47,11 @@ const ClientTransactionHistory: React.FC<ClientTransactionHistoryProps> = ({
   } = useTransactionRefund();
 
   const {
-    isEmailDialogOpen,
-    setIsEmailDialogOpen,
+    isSendDialogOpen,
+    setIsSendDialogOpen,
     selectedTransaction: selectedTransactionForEmail,
-    recipientEmail,
-    setRecipientEmail,
+    emailRecipient,
+    setEmailRecipient,
     emailSubject,
     setEmailSubject,
     emailMessage,
@@ -116,11 +117,11 @@ const ClientTransactionHistory: React.FC<ClientTransactionHistoryProps> = ({
           </div>
 
           <EmailDialog
-            open={isEmailDialogOpen}
-            onOpenChange={setIsEmailDialogOpen}
+            open={isSendDialogOpen}
+            onOpenChange={setIsSendDialogOpen}
             transaction={selectedTransactionForEmail}
-            recipientEmail={recipientEmail}
-            onRecipientEmailChange={setRecipientEmail}
+            recipientEmail={emailRecipient}
+            onRecipientEmailChange={setEmailRecipient}
             emailSubject={emailSubject}
             onEmailSubjectChange={setEmailSubject}
             emailMessage={emailMessage}

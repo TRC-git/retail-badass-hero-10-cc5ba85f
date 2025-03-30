@@ -63,7 +63,8 @@ export const useTransactionEmail = () => {
       });
       
       pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-      const pdfBase64 = pdf.output('datauristring').split(',')[1];
+      // Fix: Convert to string with toString()
+      const pdfBase64 = pdf.output('datauristring').toString().split(',')[1];
 
       await sendInvoice(pdfBase64, 'Store Name');
     } catch (error) {

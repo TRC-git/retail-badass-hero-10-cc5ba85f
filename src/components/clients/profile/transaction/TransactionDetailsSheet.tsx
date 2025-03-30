@@ -26,11 +26,11 @@ const TransactionDetailsSheet: React.FC<TransactionDetailsSheetProps> = ({
   const [customerDetails, setCustomerDetails] = useState<Customer | null>(null);
   
   const {
-    isEmailDialogOpen,
-    setIsEmailDialogOpen,
+    isSendDialogOpen,
+    setIsSendDialogOpen,
     selectedTransaction,
-    recipientEmail,
-    setRecipientEmail,
+    emailRecipient,
+    setEmailRecipient,
     emailSubject,
     setEmailSubject,
     emailMessage,
@@ -103,11 +103,11 @@ const TransactionDetailsSheet: React.FC<TransactionDetailsSheetProps> = ({
       </Sheet>
 
       <EmailDialog
-        open={isEmailDialogOpen}
-        onOpenChange={setIsEmailDialogOpen}
+        open={isSendDialogOpen}
+        onOpenChange={setIsSendDialogOpen}
         transaction={selectedTransaction}
-        recipientEmail={recipientEmail}
-        onRecipientEmailChange={setRecipientEmail}
+        recipientEmail={emailRecipient}
+        onRecipientEmailChange={setEmailRecipient}
         emailSubject={emailSubject}
         onEmailSubjectChange={setEmailSubject}
         emailMessage={emailMessage}
