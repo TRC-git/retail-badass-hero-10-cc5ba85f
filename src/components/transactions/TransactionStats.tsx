@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { 
   BanknoteIcon, 
@@ -15,15 +16,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PeriodType } from "@/hooks/dashboard";
 
 interface TransactionStatsProps {
   dateRange?: DateRange;
 }
 
 const TransactionStats: React.FC<TransactionStatsProps> = ({ dateRange }) => {
-  const [periodType, setPeriodType] = useState<PeriodType>('week');
-  const { data: stats, isLoading: statsLoading } = useTransactionStats(dateRange, periodType);
+  const [periodType, setPeriodType] = useState<string>('week');
+  const { 
+    totalSales, 
+    averageOrderValue, 
+    transactionCount,
+    isLoading 
+  } = useTransactionStats(dateRange);
   
   const getDateRangeDescription = () => {
     if (!dateRange?.from) return "";
@@ -35,7 +40,7 @@ const TransactionStats: React.FC<TransactionStatsProps> = ({ dateRange }) => {
   };
 
   // Get period subtitle text based on period type
-  const getPeriodSubtitle = (type: PeriodType): string => {
+  const getPeriodSubtitle = (type: string): string => {
     switch (type) {
       case 'day':
         return 'Today';
@@ -51,7 +56,7 @@ const TransactionStats: React.FC<TransactionStatsProps> = ({ dateRange }) => {
   return (
     <div className="mb-6">
       <div className="flex justify-end mb-4">
-        <Select value={periodType} onValueChange={(value) => setPeriodType(value as PeriodType)}>
+        <Select value={periodType} onValueChange={(value) => setPeriodType(value)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select period" />
           </SelectTrigger>
@@ -67,30 +72,26 @@ const TransactionStats: React.FC<TransactionStatsProps> = ({ dateRange }) => {
         <StatCard
           title="Total Sales"
           subtitle={getDateRangeDescription()}
-          value={statsLoading ? "Loading..." : formatCurrency(stats?.totalSales || 0)}
+          value={isLoading ? "Loading..." : formatCurrency(totalSales || 0)}
           icon={<BanknoteIcon />}
         />
         <StatCard
-          title="Today's Sales"
-          value={statsLoading ? "Loading..." : formatCurrency(stats?.todaySales || 0)}
+          title="Transactions"
+          subtitle={getDateRangeDescription()}
+          value={isLoading ? "Loading..." : String(transactionCount || 0)}
           icon={<CalendarIcon />}
         />
         <StatCard
           title="Avg. Transaction"
           subtitle={getDateRangeDescription()}
-          value={statsLoading ? "Loading..." : formatCurrency(stats?.avgTransactionValue || 0)}
+          value={isLoading ? "Loading..." : formatCurrency(averageOrderValue || 0)}
           icon={<TrendingUp />}
         />
         <StatCard
           title="Trend"
           subtitle={getPeriodSubtitle(periodType)}
-          value={statsLoading ? "Loading..." : `${stats?.salesTrend.toFixed(1) || 0}%`}
+          value={isLoading ? "Loading..." : "0%"}
           icon={<TrendingUp />}
-          trend={stats?.salesTrend ? { 
-            value: stats.salesTrend, 
-            positive: stats.salesTrend > 0,
-            periodLabel: stats?.periodLabel 
-          } : undefined}
         />
       </div>
     </div>

@@ -1,11 +1,33 @@
 
 // Type declarations for modules that are missing TypeScript definitions
 declare module 'html2canvas' {
-  import html2canvas from 'html2canvas';
-  export default html2canvas;
+  interface Options {
+    scale?: number;
+    logging?: boolean;
+    useCORS?: boolean;
+    backgroundColor?: string;
+    allowTaint?: boolean;
+    [key: string]: any;
+  }
+  
+  export default function html2canvas(element: HTMLElement, options?: Options): Promise<HTMLCanvasElement>;
 }
 
 declare module 'jspdf' {
-  import jsPDF from 'jspdf';
-  export default jsPDF;
+  interface JsPDFOptions {
+    orientation?: 'portrait' | 'landscape';
+    unit?: string;
+    format?: string;
+    [key: string]: any;
+  }
+  
+  interface JsPDF {
+    addImage: (imageData: string, format: string, x: number, y: number, width: number, height: number) => JsPDF;
+    output: (type: string) => string;
+    setProperties: (properties: Record<string, string>) => JsPDF;
+    save: (filename: string) => JsPDF;
+    [key: string]: any;
+  }
+  
+  export default function jsPDF(options?: JsPDFOptions): JsPDF;
 }

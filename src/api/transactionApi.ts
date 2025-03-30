@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Transaction } from "@/types";
 
@@ -23,3 +22,21 @@ export const fetchTransactionsByCustomerId = async (customerId: string): Promise
 
 // Alias for backward compatibility
 export const fetchTransactionsByCustomer = fetchTransactionsByCustomerId;
+
+// Add fetchTransactions function
+export const fetchTransactions = async (): Promise<Transaction[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('transactions')
+      .select('*');
+    
+    if (error) {
+      throw error;
+    }
+    
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching transactions:', error);
+    return [];
+  }
+};
