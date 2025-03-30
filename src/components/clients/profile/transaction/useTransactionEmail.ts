@@ -63,7 +63,7 @@ export const useTransactionEmail = () => {
       });
       
       pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-      // Fix: Ensure we're getting a string by converting the output properly
+      // Fixed: Ensure we're getting a string by properly converting the output
       const dataUriString = pdf.output('datauristring');
       const pdfBase64 = typeof dataUriString === 'string' ? dataUriString.split(',')[1] : '';
 
