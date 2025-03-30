@@ -1,139 +1,77 @@
 
-import { useState } from "react";
+import { useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
-import { Transaction } from "@/types/transaction";
 
 export const useTransactionEmail = () => {
-  const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-  const [recipientEmail, setRecipientEmail] = useState("");
-  const [emailSubject, setEmailSubject] = useState("Your Receipt");
-  const [emailMessage, setEmailMessage] = useState(
-    "Thank you for your business. Please find your receipt attached."
-  );
-  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [isSendDialogOpen, setIsSendDialogOpen] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [emailRecipient, setEmailRecipient] = useState('');
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailMessage, setEmailMessage] = useState('Thank you for your business. Please find your receipt attached.');
 
-  const handleEmailClick = async (transaction: Transaction, defaultEmail?: string) => {
-    setSelectedTransaction(transaction);
-    
-    let customerEmail = defaultEmail || "";
-    
-    // If no email provided and we have a customers.id, fetch from Supabase
-    if (!customerEmail && transaction.customers?.id) {
-      try {
-        const { data, error } = await supabase
-          .from('customers')
-          .select('email')
-          .eq('id', transaction.customers.id)
-          .single();
-        
-        if (!error && data) {
-          customerEmail = data.email || "";
-        }
-      } catch (error) {
-        console.error('Error fetching customer email:', error);
-      }
-    }
-    
-    // Fallback to transaction.customers?.email if still no email
-    customerEmail = customerEmail || transaction.customers?.email || "";
-    
-    // Set the email recipient to the customer's email address
-    setRecipientEmail(customerEmail);
-    
-    // Set transaction-specific subject
-    setEmailSubject(`Receipt for transaction #${transaction.id.slice(0, 8)}`);
-    
-    // Open the email dialog
-    setIsEmailDialogOpen(true);
+  const initializeEmailData = (recipientEmail: string, subject: string) => {
+    setEmailRecipient(recipientEmail || '');
+    setEmailSubject(subject || '');
   };
 
-  const generatePDF = async (elementId: string): Promise<string> => {
-    try {
-      const element = document.getElementById(elementId);
-      if (!element) {
-        throw new Error("Element not found");
-      }
-
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      });
-
-      const pdf = new jsPDF({
-        format: "a4",
-        unit: "mm",
-      });
-
-      const imgData = canvas.toDataURL("image/png");
-      const imgWidth = 210;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
-      
-      // Convert PDF to base64
-      const pdfBase64 = pdf.output("datauristring");
-      return pdfBase64.split(",")[1]; // Remove the data URI prefix
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      throw error;
-    }
+  const handleRecipientChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmailRecipient(e.target.value);
   };
 
-  const handleSendEmail = async (invoiceElementId: string) => {
-    if (!selectedTransaction) return;
-    
-    if (!recipientEmail) {
-      toast.error("Please enter a recipient email address");
-      return;
+  const handleSubjectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmailSubject(e.target.value);
+  };
+
+  const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setEmailMessage(e.target.value);
+  };
+
+  const sendInvoice = async (pdfBase64: string | null, storeName: string) => {
+    if (!pdfBase64 || !emailRecipient) {
+      toast.error('Failed to generate PDF or missing recipient email');
+      return false;
     }
     
-    setIsSendingEmail(true);
+    setIsSending(true);
     
     try {
-      // Generate PDF from the invoice element
-      const pdfBase64 = await generatePDF(invoiceElementId);
-      
-      // Send email via Supabase Edge Function
-      const { data, error } = await supabase.functions.invoke("send-invoice", {
+      // Send email with PDF attachment using Supabase Edge Function
+      const { data, error } = await supabase.functions.invoke('send-invoice', {
         body: {
           pdfBase64,
-          recipientEmail,
+          recipientEmail: emailRecipient,
           subject: emailSubject,
           message: emailMessage,
-          storeName: "NextPOS" // You might want to make this dynamic from settings
+          storeName
         }
       });
       
       if (error) throw error;
       
-      toast.success("Receipt email sent successfully");
-      setIsEmailDialogOpen(false);
-      
+      setIsSendDialogOpen(false);
+      toast.success('Invoice sent successfully');
+      return true;
     } catch (error) {
-      console.error("Error sending email:", error);
-      toast.error("Failed to send receipt email. Please try again.");
+      console.error('Error sending invoice:', error);
+      toast.error('Failed to send invoice. Please try again.');
+      return false;
     } finally {
-      setIsSendingEmail(false);
+      setIsSending(false);
     }
   };
 
   return {
-    isEmailDialogOpen,
-    setIsEmailDialogOpen,
-    selectedTransaction,
-    recipientEmail,
-    setRecipientEmail,
+    isSendDialogOpen,
+    setIsSendDialogOpen,
+    isSending,
+    emailRecipient,
     emailSubject,
-    setEmailSubject,
     emailMessage,
-    setEmailMessage,
-    isSendingEmail,
-    handleEmailClick,
-    handleSendEmail
+    handleRecipientChange,
+    handleSubjectChange,
+    handleMessageChange,
+    initializeEmailData,
+    sendInvoice
   };
 };

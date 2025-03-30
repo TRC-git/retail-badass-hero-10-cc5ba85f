@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { fetchTransactions } from '@/api/transactionApi';
 import { Transaction } from '@/types/transaction';
+import { DateRange } from 'react-day-picker';
 
 // Define return type for the hook
 interface TransactionStatsReturn {
@@ -17,7 +18,7 @@ interface TransactionStatsReturn {
  * Hook to calculate transaction statistics
  */
 export const useTransactionStats = (
-  dateRange?: { startDate: Date; endDate: Date }
+  dateRange?: DateRange
 ): TransactionStatsReturn => {
   const [totalSales, setTotalSales] = useState<number>(0);
   const [averageOrderValue, setAverageOrderValue] = useState<number>(0);
@@ -32,12 +33,15 @@ export const useTransactionStats = (
         const transactions = await fetchTransactions();
         
         // Filter by date range if provided
-        const filteredTransactions = dateRange
+        const filteredTransactions = dateRange && dateRange.from
           ? transactions.filter(transaction => {
               const transactionDate = new Date(transaction.created_at || '');
+              const from = dateRange.from;
+              const to = dateRange.to || dateRange.from;
+              
               return (
-                transactionDate >= dateRange.startDate &&
-                transactionDate <= dateRange.endDate
+                transactionDate >= from &&
+                transactionDate <= to
               );
             })
           : transactions;
@@ -51,7 +55,7 @@ export const useTransactionStats = (
         
         setTransactionCount(count);
         setTotalSales(total);
-        setAverageOrderValue(count > 0 ? Number(total) / Number(count) : 0);
+        setAverageOrderValue(count > 0 ? total / count : 0);
         
       } catch (err) {
         setError(err instanceof Error ? err : new Error('Unknown error'));

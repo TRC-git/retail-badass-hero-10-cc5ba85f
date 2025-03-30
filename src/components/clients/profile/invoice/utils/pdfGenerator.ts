@@ -53,7 +53,7 @@ export const createPdfFromCanvas = (
     filename?: string;
     addMetadata?: boolean;
   }
-): jsPDF => {
+): typeof jsPDF.prototype => {
   const imgData = canvas.toDataURL('image/png', 1.0); // Use maximum quality
   const pdf = new jsPDF({
     orientation: 'portrait',
@@ -89,6 +89,6 @@ export const createPdfFromCanvas = (
  * @param pdf - The PDF document to convert
  * @returns Base64 encoded PDF data (without the data URI prefix)
  */
-export const pdfToBase64 = (pdf: jsPDF): string => {
+export const pdfToBase64 = (pdf: typeof jsPDF.prototype): string => {
   return pdf.output('datauristring').split(',')[1];
 };

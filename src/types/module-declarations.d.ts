@@ -21,7 +21,8 @@ declare module 'jspdf' {
     [key: string]: any;
   }
   
-  interface JsPDF {
+  class JsPDF {
+    constructor(options?: JsPDFOptions);
     addImage: (imageData: string, format: string, x: number, y: number, width: number, height: number) => JsPDF;
     output: (type: string) => string;
     setProperties: (properties: Record<string, string>) => JsPDF;
@@ -29,5 +30,5 @@ declare module 'jspdf' {
     [key: string]: any;
   }
   
-  export default function jsPDF(options?: JsPDFOptions): JsPDF;
+  export default JsPDF;
 }
