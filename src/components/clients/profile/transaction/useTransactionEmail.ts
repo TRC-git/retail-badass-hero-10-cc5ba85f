@@ -2,6 +2,9 @@
 import { useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Transaction } from "@/types/transaction";
+import html2canvas from 'html2canvas';
+import JsPDF from 'jspdf';
 
 export const useTransactionEmail = () => {
   const [isSendDialogOpen, setIsSendDialogOpen] = useState(false);
@@ -9,6 +12,7 @@ export const useTransactionEmail = () => {
   const [emailRecipient, setEmailRecipient] = useState('');
   const [emailSubject, setEmailSubject] = useState('');
   const [emailMessage, setEmailMessage] = useState('Thank you for your business. Please find your receipt attached.');
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
 
   const initializeEmailData = (recipientEmail: string, subject: string) => {
     setEmailRecipient(recipientEmail || '');
@@ -25,6 +29,49 @@ export const useTransactionEmail = () => {
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setEmailMessage(e.target.value);
+  };
+
+  const handleEmailClick = (transaction: Transaction, customerEmail?: string) => {
+    setSelectedTransaction(transaction);
+    setEmailRecipient(customerEmail || transaction.customers?.email || '');
+    setEmailSubject(`Receipt from Transaction #${transaction.id.slice(0, 8)}`);
+    setIsSendDialogOpen(true);
+  };
+
+  const handleSendEmail = async (invoiceElementId: string) => {
+    const invoiceElement = document.getElementById(invoiceElementId);
+    if (!invoiceElement || !emailRecipient) {
+      toast.error('Failed to generate PDF or missing recipient email');
+      return;
+    }
+
+    setIsSending(true);
+    
+    try {
+      // Generate PDF using html2canvas and jsPDF
+      const canvas = await html2canvas(invoiceElement, {
+        scale: 2,
+        useCORS: true,
+        logging: false
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new JsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      const pdfBase64 = pdf.output('datauristring').split(',')[1];
+
+      await sendInvoice(pdfBase64, 'Store Name');
+    } catch (error) {
+      console.error('Error generating or sending PDF:', error);
+      toast.error('Failed to send receipt. Please try again.');
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const sendInvoice = async (pdfBase64: string | null, storeName: string) => {
@@ -72,6 +119,14 @@ export const useTransactionEmail = () => {
     handleSubjectChange,
     handleMessageChange,
     initializeEmailData,
-    sendInvoice
+    sendInvoice,
+    selectedTransaction,
+    setSelectedTransaction,
+    setEmailRecipient,
+    setEmailSubject,
+    setEmailMessage,
+    handleEmailClick,
+    handleSendEmail,
+    isSendingEmail: isSending // Alias for backward compatibility
   };
 };
